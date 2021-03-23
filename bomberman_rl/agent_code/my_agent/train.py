@@ -20,7 +20,7 @@ ACTIONS = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'WAIT', 'BOMB']
 
 # Hyper parameters
 RECORD_ENEMY_TRANSITIONS = 0.3  # record enemy transitions with probability ...
-TRAINING_ROUNDS = 500
+TRAINING_ROUNDS = 5000
 
 # python main.py play --agents my_agent rule_based_agent random_agent rule_based_agent --train 1 --no-gui --n-rounds 500
 
