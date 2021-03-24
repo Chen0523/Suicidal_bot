@@ -40,8 +40,8 @@ def setup(self):
     self.record = pd.DataFrame(columns=["round", "steps", "loss", "total_rewards"])
 
     # training parameters
-    self.MIN_ENEMY_STEPS = 1500000
-    self.MEMORY_CAPACITY = 1500000
+    self.MIN_ENEMY_STEPS = 15000
+    self.MEMORY_CAPACITY = 15000
 
     self.modelpath = os.path.join(os.getcwd(),"models",'model.pt')
     self.qnn = DQN(input_size, output_size, kernel_size, self.MEMORY_CAPACITY, self.MIN_ENEMY_STEPS)

@@ -8,7 +8,7 @@ import torch.optim as optim
 import torch.nn.functional as F
 
 BATCH_SIZE = 32
-LR = 0.005                   # learn rate
+LR = 0.01                   # learn rate
 EPSILON = 0.8
 GAMMA = 0.8
 TARGET_REPLACE_ITER = 300   # how often do the reality network iterate

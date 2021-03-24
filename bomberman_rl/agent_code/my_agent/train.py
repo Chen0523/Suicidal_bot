@@ -158,9 +158,9 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
 
 	if self.qnn.memory_counter > self.MEMORY_CAPACITY \
 			and last_game_state['step'] > 50 \
-			and local_reward > - 200:
+			and local_reward > -150 :
 		model_num = "model_{}th_round.pt".format(last_game_state['round'])
-		save_model_path = os.path.join(os.getcwd(), "models", model_num)
+		save_model_path = os.path.join(os.getcwd(), "model_big_train", model_num)
 		torch.save(self.qnn.eval_net.state_dict(), save_model_path)
 		print("Saved Model with loss {}".format(self.qnn.loss))
 		self.logger.debug("Saved Model with loss {}".format(self.qnn.loss))
@@ -174,7 +174,7 @@ def reward_from_events(self, events: List[str]) -> int:
 	certain behavior.
 	"""
 	game_rewards = {
-		e.CRATE_DESTROYED: 0,
+		e.CRATE_DESTROYED: 1,
 		e.COIN_COLLECTED: 50,
 		e.COIN_FOUND: 2,
 
@@ -189,15 +189,17 @@ def reward_from_events(self, events: List[str]) -> int:
 		e.MOVED_RIGHT: - 0.001,
 		e.MOVED_UP: - 0.001,
 		e.MOVED_DOWN: - 0.001,
-		e.WAITED: - 0.001
+		e.WAITED: - 0.5
 	}
 	reward_sum = 0
 	if (e.MOVED_LEFT or e.MOVED_RIGHT or e.MOVED_UP or e.MOVED_DOWN or e.WAITED) and e.BOMB_EXPLODED in events:
 		if (e.GOT_KILLED and e.KILLED_SELF) not in events:
-			reward_sum += 50
+			reward_sum += 75
 
 	if (e.INVALID_ACTION or e.WAITED) and (e.GOT_KILLED or e.KILLED_SELF) in events:
-		reward_sum -= 50
+		reward_sum -= 75
+        if e.CRATE_DESTROYED and e.KILLED_SELF in events:
+                reward_sum -= 50
 
 	for event in events:
 		if event in game_rewards:
