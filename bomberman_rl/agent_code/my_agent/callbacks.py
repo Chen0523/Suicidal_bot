@@ -100,20 +100,24 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         #location map
         self_loc = game_state['self'][-1]
 
-        others = [xy[-1] for xy in game_state['others'] if xy[0]!= 'my_agent']
+        others = [xy[-1] for xy in game_state['others']]
         self_field = np.zeros((17,17))
         self_field[self_loc] = 1
 
         for other in others:
             self_field[other] = -1
-        for coin in game_state['coins']:
-            self_field[coin] = 2
 
         #game map
         game_field = game_state['field']
-
+        for coin in game_state['coins']:
+            game_field[coin] = 2
+        for bomb in game_state['bombs']:
+            game_field[bomb[0]] = -2
         #explosion map
         explosion_field = game_state['explosion_map']
+        for bomb in game_state['bombs']:
+            explosion_field[bomb[0]] = -1
+
 
     # For example, you could construct several channels of equal shape, ...
     channels = []

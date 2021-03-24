@@ -9,9 +9,10 @@ import torch.nn.functional as F
 
 BATCH_SIZE = 32
 LR = 0.01                   # learn rate
-EPSILON = 0.8
+EPSILON_L = 0.5
+EPSILON_H = 0.9
 GAMMA = 0.8
-TARGET_REPLACE_ITER = 300   # how often do the reality network iterate
+TARGET_REPLACE_ITER = 200   # how often do the reality network iterate
 
 N_ACTIONS = 6  # action space
 
@@ -38,6 +39,7 @@ class DQN(object):
 		x: input, state of the agent
 		"""
 		x = torch.unsqueeze(torch.FloatTensor(x), 0)
+		EPSILON = EPSILON_H
 		# print(x.shape)
 		if train:
 
@@ -45,9 +47,11 @@ class DQN(object):
 				# now only enemy steps are recorded, my_agent just hanging around
 				useless_action = [np.random.choice([0, 1, 2, 3, 4, 5], p=[.2, .2, .2, .2, .2, .0])]
 				return useless_action
+			elif self.memory_counter < self.MEMORY_CAPACITY * 2:
+				EPSILON = EPSILON_L
+
 			if self.memory_counter == self.MEMORY_CAPACITY:
 				print("Stop making random choices")
-
 
 		# Start doing real action
 		if np.random.uniform() < EPSILON:  # choose an optimize function
