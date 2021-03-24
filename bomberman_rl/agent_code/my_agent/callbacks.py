@@ -40,8 +40,8 @@ def setup(self):
     self.record = pd.DataFrame(columns=["round", "steps", "loss", "total_rewards"])
 
     # training parameters
-    self.MIN_ENEMY_STEPS = 15000
-    self.MEMORY_CAPACITY = 15000
+    self.MIN_ENEMY_STEPS = 20000
+    self.MEMORY_CAPACITY = 20000
 
     self.modelpath = os.path.join(os.getcwd(),"models",'model.pt')
     self.qnn = DQN(input_size, output_size, kernel_size, self.MEMORY_CAPACITY, self.MIN_ENEMY_STEPS)
@@ -97,6 +97,9 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         game_field = np.zeros((17, 17))
         explosion_field = np.zeros((17, 17))
     else:
+
+
+
         #location map
         self_loc = game_state['self'][-1]
 
@@ -110,15 +113,56 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         #game map
         game_field = game_state['field']
         for coin in game_state['coins']:
-            game_field[coin] = 2
-        for bomb in game_state['bombs']:
-            game_field[bomb[0]] = -2
+            game_field[coin] = 10
+        # for bomb in game_state['bombs']:
+        #     game_field[bomb[0]] = -2
         #explosion map
         explosion_field = game_state['explosion_map']
         for bomb in game_state['bombs']:
             explosion_field[bomb[0]] = -1
 
+        # cut out the self-centred area
+        #left-right
+        padding_left = 0
+        padding_right = 0
+        padding_top = 0
+        padding_down = 0
+        if self_loc[1] - 8 < 0:
+            padding_left = 8 - self_loc[1] - 1
+            idx_left = 0
+            idx_right = self_loc[1] + 8
+        elif self_loc[1] + 8 >16:
+            padding_right = self_loc[1] + 8 - 16
+            idx_right = 17
+            idx_left = self_loc[1] - 8
+        else:
+            idx_left = self_loc[1] - 8
+            idx_right = self_loc[1] + 8
 
+        if self_loc[0] - 8 < 0:
+            padding_top = 8 - self_loc[0] - 1
+            idx_down = self_loc[0] + 8
+            idx_top = 0
+        elif self_loc[0] + 8 > 16:
+            padding_down = self_loc[0] + 8 - 16
+            idx_top = self_loc[0] - 8
+            idx_down = 17
+        else:
+            idx_top = self_loc[0] - 8
+            idx_down = self_loc[0]+ 8
+
+        loc_game = game_field[idx_top:idx_down, idx_left:idx_right]
+        game_field = np.pad(loc_game, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = -1)
+
+        loc_self = self_field[idx_top:idx_down, idx_left:idx_right]
+        self_field = np.pad(loc_self, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = 0)
+
+        loc_explosion = explosion_field[idx_top:idx_down, idx_left:idx_right]
+        explosion_field = np.pad(loc_explosion, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = 0)
+
+        # print(game_field)
+        # print(self_field)
+        # print(explosion_field)
     # For example, you could construct several channels of equal shape, ...
     channels = []
     channels.append(self_field)

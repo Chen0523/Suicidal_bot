@@ -19,6 +19,7 @@ Transition = namedtuple('Transition',
 ACTIONS = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'WAIT', 'BOMB']
 
 # Hyper parameters
+RECORD_RANDOM_TRANSITIONS = 0.2
 RECORD_ENEMY_TRANSITIONS = 0.3  # record enemy transitions with probability ...
 TRAINING_ROUNDS = 10000
 
@@ -26,7 +27,7 @@ TRAINING_ROUNDS = 10000
 
 
 # Events
-PLACEHOLDER_EVENT = "PLACEHOLDER"
+ACTIONS = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'WAIT', 'BOMB']
 
 
 def setup_training(self):
@@ -63,15 +64,20 @@ def game_events_occurred(self, old_game_state: dict, self_action: str, new_game_
 		self.logger.debug(f'Saved enough information from enemies, start to try the own policy')
 		print("Enough learning, I will try on my own now!")
 
-	if self.qnn.memory_counter > self.MIN_ENEMY_STEPS:
-		if old_game_state != None:
-			rewards = reward_from_events(self, events)
-			self.total_rewards += rewards
-			self.qnn.store_transition(state_to_features(old_game_state),
-			                          np.array([ACTIONS.index(self_action)]),
-			                          rewards,
-			                          state_to_features(new_game_state))
+	if old_game_state != None:
+
+		if(self.qnn.memory_counter < self.MEMORY_CAPACITY):
+			if np.random.uniform() < RECORD_RANDOM_TRANSITIONS:
+				rewards = reward_from_events(self, events)
+				self.total_rewards += rewards
+				self.qnn.store_transition(state_to_features(old_game_state),
+				                          np.array([ACTIONS.index(self_action)]),
+				                          rewards,
+				                          state_to_features(new_game_state))
+
+		if self.qnn.memory_counter > self.MEMORY_CAPACITY:
 			self.qnn.learn()
+
 
 
 def enemy_game_events_occurred(self, enemy_name: str, old_enemy_game_state: dict, enemy_action: str,
@@ -94,7 +100,7 @@ def enemy_game_events_occurred(self, enemy_name: str, old_enemy_game_state: dict
 			if self.qnn.memory_counter > self.MEMORY_CAPACITY:
 				self.qnn.learn()
 	else:
-		# only record a part of enemy transition randomly after reached min. enmey steps
+		# only record a part of enemy transition randomly after reached min. enemey steps
 		if np.random.uniform() < RECORD_ENEMY_TRANSITIONS:
 			if old_enemy_game_state != None and enemy_action != None:
 				self.qnn.store_transition(state_to_features(old_enemy_game_state),
@@ -120,6 +126,7 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
 	self.logger.debug(f'Encountered event(s) {", ".join(map(repr, events))} in final step')
 	# self.transitions.append(Transition(state_to_features(last_game_state), last_action, None, reward_from_events(self, events)))
 	# Store the model
+	print(events)
 	print("Finished {}th round with {} steps".format(last_game_state['round'], last_game_state['step']))
 	local_reward = 0
 	if self.qnn.memory_counter > self.MIN_ENEMY_STEPS:
@@ -148,6 +155,8 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
 			                                               'loss': [self.qnn.loss],
 			                                               'total_rewards': [self.total_rewards]}),
 			                                 ignore_index=True)
+			self.logger.debug("Model has loss {}".format(self.qnn.loss))
+
 			if (last_game_state['round'] == TRAINING_ROUNDS) or (last_game_state['round'] == int(TRAINING_ROUNDS/2)):
 				timestamp = time.strftime("%d_%H_%M_%S", time.localtime())
 				recordPath = os.path.join(os.getcwd(), "logs", '{}.csv'.format(timestamp))
@@ -160,7 +169,7 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
 			and last_game_state['step'] > 50 \
 			and local_reward > -150:
 		model_num = "model_{}th_round.pt".format(last_game_state['round'])
-		save_model_path = os.path.join(os.getcwd(), "models","/big_train/", model_num)
+		save_model_path = os.path.join(os.getcwd(), "models", model_num)
 		torch.save(self.qnn.eval_net.state_dict(), save_model_path)
 		print("Saved Model with loss {}".format(self.qnn.loss))
 		self.logger.debug("Saved Model with loss {}".format(self.qnn.loss))

@@ -15,6 +15,7 @@ GAMMA = 0.8
 TARGET_REPLACE_ITER = 200   # how often do the reality network iterate
 
 N_ACTIONS = 6  # action space
+ACTIONS = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'WAIT', 'BOMB']
 
 class DQN(object):
 	def __init__(self,in_channels:int,out_channels:int,kernel_size:int,MEMORY_CAPACITY,MIN_ENEMY_STEPS,action_space = 6,stride = 2, ):
@@ -45,7 +46,7 @@ class DQN(object):
 
 			if self.memory_counter < self.MEMORY_CAPACITY:
 				# now only enemy steps are recorded, my_agent just hanging around
-				useless_action = [np.random.choice([0, 1, 2, 3, 4, 5], p=[.2, .2, .2, .2, .2, .0])]
+				useless_action = [np.random.choice([0, 1, 2, 3, 4, 5], p=[.2, .2, .2, .2, .1, .1])]
 				return useless_action
 			elif self.memory_counter < self.MEMORY_CAPACITY * 2:
 				EPSILON = EPSILON_L
@@ -126,7 +127,7 @@ class Net(nn.Module):
 		)
 
 	def _get_conv_out(self):
-		o = self.conv(torch.zeros(1,3,17,17))
+		o = self.conv(torch.zeros(1,3,15,15))
 		return int(np.prod(o.size()))
 
 	def forward(self, x):
