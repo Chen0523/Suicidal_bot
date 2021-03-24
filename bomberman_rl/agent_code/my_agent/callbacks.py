@@ -40,8 +40,8 @@ def setup(self):
     self.record = pd.DataFrame(columns=["round", "steps", "loss", "total_rewards"])
 
     # training parameters
-    self.MIN_ENEMY_STEPS = 20000
-    self.MEMORY_CAPACITY = 20000
+    self.MIN_ENEMY_STEPS = 200
+    self.MEMORY_CAPACITY = 200
 
     self.modelpath = os.path.join(os.getcwd(),"models",'model.pt')
     self.qnn = DQN(input_size, output_size, kernel_size, self.MEMORY_CAPACITY, self.MIN_ENEMY_STEPS)
@@ -93,9 +93,9 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
 
     if game_state is None:
         #initial statues
-        self_field = np.zeros((17, 17))
-        game_field = np.zeros((17, 17))
-        explosion_field = np.zeros((17, 17))
+        self_field = np.zeros((13, 13))
+        game_field = np.zeros((13, 13))
+        explosion_field = np.zeros((13, 13))
     else:
 
 
@@ -127,42 +127,50 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         padding_right = 0
         padding_top = 0
         padding_down = 0
-        if self_loc[1] - 8 < 0:
-            padding_left = 8 - self_loc[1] - 1
+        scope = 6
+        if self_loc[1] - scope < 0:
+            padding_left = scope - self_loc[1]
             idx_left = 0
-            idx_right = self_loc[1] + 8
-        elif self_loc[1] + 8 >16:
-            padding_right = self_loc[1] + 8 - 16
+            idx_right = self_loc[1] + scope + 1
+        elif self_loc[1] + scope >16:
+            padding_right = self_loc[1] + scope - 16
             idx_right = 17
-            idx_left = self_loc[1] - 8
+            idx_left = self_loc[1] - scope
         else:
-            idx_left = self_loc[1] - 8
-            idx_right = self_loc[1] + 8
+            idx_left = self_loc[1] - scope
+            idx_right = self_loc[1] + scope + 1
 
-        if self_loc[0] - 8 < 0:
-            padding_top = 8 - self_loc[0] - 1
-            idx_down = self_loc[0] + 8
+        if self_loc[0] - scope < 0:
+            padding_top = scope - self_loc[0]
+            idx_down = self_loc[0] + scope + 1
             idx_top = 0
-        elif self_loc[0] + 8 > 16:
-            padding_down = self_loc[0] + 8 - 16
-            idx_top = self_loc[0] - 8
+        elif self_loc[0] + scope > 16:
+            padding_down = self_loc[0] + scope - 16
+            idx_top = self_loc[0] - scope
             idx_down = 17
         else:
-            idx_top = self_loc[0] - 8
-            idx_down = self_loc[0]+ 8
+            idx_top = self_loc[0] - scope
+            idx_down = self_loc[0]+ scope + 1
 
-        loc_game = game_field[idx_top:idx_down, idx_left:idx_right]
+        loc_game = game_field[:, idx_left:idx_right]
+        loc_game = loc_game[idx_top:idx_down,:]
         game_field = np.pad(loc_game, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = -1)
 
-        loc_self = self_field[idx_top:idx_down, idx_left:idx_right]
+        loc_self = self_field[:, idx_left:idx_right]
+        loc_self= loc_self[idx_top:idx_down, :]
         self_field = np.pad(loc_self, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = 0)
 
-        loc_explosion = explosion_field[idx_top:idx_down, idx_left:idx_right]
+        loc_explosion = explosion_field[:, idx_left:idx_right]
+        loc_explosion= loc_explosion[idx_top:idx_down, :]
         explosion_field = np.pad(loc_explosion, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = 0)
 
-        # print(game_field)
-        # print(self_field)
-        # print(explosion_field)
+        if game_field.shape[0] == 12 or game_field.shape[1] == 12:
+            print("new")
+            print(game_field.shape)
+            print(self_loc)
+            print(idx_top,idx_down,idx_left,idx_right)
+            print(padding_top,padding_down,padding_left,padding_right)
+            print(self_field)
     # For example, you could construct several channels of equal shape, ...
     channels = []
     channels.append(self_field)

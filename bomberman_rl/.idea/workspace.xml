@@ -13,7 +13,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/agent_code/my_agent/DQN.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2131">
+            <state relative-caret-position="2431">
               <caret line="129" column="43" selection-start-line="129" selection-start-column="43" selection-end-line="129" selection-end-column="43" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
@@ -22,11 +22,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/agent_code/my_agent/callbacks.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3151">
-              <caret line="152" selection-start-line="152" selection-end-line="152" />
+            <state relative-caret-position="245">
+              <caret line="140" column="47" selection-start-line="140" selection-start-column="47" selection-end-line="140" selection-end-column="47" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
               </folding>
@@ -35,22 +35,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/main.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="613">
-              <caret line="145" column="23" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
-              <folding>
-                <element signature="e#0#9#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/agent_code/my_agent/train.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="207">
-              <caret line="69" column="62" selection-start-line="69" selection-start-column="62" selection-end-line="69" selection-end-column="62" />
+            <state relative-caret-position="-3103">
+              <caret line="25" column="96" selection-start-line="25" selection-start-column="95" selection-end-line="25" selection-end-column="96" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -93,6 +81,7 @@
       <find>save</find>
       <find>MIN_ENEMY_STEPS</find>
       <find>total_rewards</find>
+      <find>17</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -110,9 +99,9 @@
         <option value="$PROJECT_DIR$/agent_code/my_agent/util.py" />
         <option value="$PROJECT_DIR$/agents.py" />
         <option value="$PROJECT_DIR$/environment.py" />
+        <option value="$PROJECT_DIR$/agent_code/my_agent/train.py" />
         <option value="$PROJECT_DIR$/agent_code/my_agent/DQN.py" />
         <option value="$PROJECT_DIR$/agent_code/my_agent/callbacks.py" />
-        <option value="$PROJECT_DIR$/agent_code/my_agent/train.py" />
       </list>
     </option>
   </component>
@@ -337,7 +326,7 @@
       <workItem from="1616406472340" duration="25494000" />
       <workItem from="1616490412942" duration="11376000" />
       <workItem from="1616597563300" duration="194000" />
-      <workItem from="1616609379070" duration="7307000" />
+      <workItem from="1616609379070" duration="11400000" />
     </task>
     <servers />
   </component>
@@ -347,7 +336,7 @@
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="91108000" />
+    <option name="totallyTimeSpent" value="95201000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -381,7 +370,7 @@
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
-      <window_info anchor="right" id="SciView" order="3" visible="true" weight="0.09115282" />
+      <window_info anchor="right" id="SciView" order="3" visible="true" weight="0.02010724" />
       <window_info anchor="right" id="R Graphics" order="4" />
       <window_info anchor="right" id="R Packages" order="5" />
       <window_info anchor="right" id="Database" order="6" />
@@ -555,6 +544,16 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3335">
+          <caret line="145" column="23" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/events.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="184">
@@ -564,7 +563,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/agent_code/my_agent/DQN.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2131">
+        <state relative-caret-position="2431">
           <caret line="129" column="43" selection-start-line="129" selection-start-column="43" selection-end-line="129" selection-end-column="43" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
@@ -572,32 +571,22 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/agent_code/my_agent/callbacks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3151">
-          <caret line="152" selection-start-line="152" selection-end-line="152" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="613">
-          <caret line="145" column="23" selection-start-line="145" selection-start-column="23" selection-end-line="145" selection-end-column="23" />
-          <folding>
-            <element signature="e#0#9#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/agent_code/my_agent/train.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="207">
-          <caret line="69" column="62" selection-start-line="69" selection-start-column="62" selection-end-line="69" selection-end-column="62" />
+        <state relative-caret-position="-3103">
+          <caret line="25" column="96" selection-start-line="25" selection-start-column="95" selection-end-line="25" selection-end-column="96" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/agent_code/my_agent/callbacks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="245">
+          <caret line="140" column="47" selection-start-line="140" selection-start-column="47" selection-end-line="140" selection-end-column="47" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
           </folding>
         </state>
       </provider>

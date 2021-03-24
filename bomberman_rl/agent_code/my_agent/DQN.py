@@ -127,7 +127,7 @@ class Net(nn.Module):
 		)
 
 	def _get_conv_out(self):
-		o = self.conv(torch.zeros(1,3,15,15))
+		o = self.conv(torch.zeros(1,3,13,13))
 		return int(np.prod(o.size()))
 
 	def forward(self, x):
