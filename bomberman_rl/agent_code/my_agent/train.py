@@ -160,7 +160,7 @@ def end_of_round(self, last_game_state: dict, last_action: str, events: List[str
 			and last_game_state['step'] > 50 \
 			and local_reward > -150:
 		model_num = "model_{}th_round.pt".format(last_game_state['round'])
-		save_model_path = os.path.join(os.getcwd(), "model_big_train", model_num)
+		save_model_path = os.path.join(os.getcwd(), "model","/big_train/", model_num)
 		torch.save(self.qnn.eval_net.state_dict(), save_model_path)
 		print("Saved Model with loss {}".format(self.qnn.loss))
 		self.logger.debug("Saved Model with loss {}".format(self.qnn.loss))
