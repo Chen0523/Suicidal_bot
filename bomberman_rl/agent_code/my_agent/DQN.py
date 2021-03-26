@@ -7,18 +7,18 @@ import torch.nn as nn
 import torch.optim as optim
 import torch.nn.functional as F
 
-BATCH_SIZE = 32
-LR = 0.01                   # learn rate
-EPSILON_L = 0.5
+BATCH_SIZE = 64
+LR = 0.02                   # learn rate
+EPSILON_L = 0.6
 EPSILON_H = 0.9
 GAMMA = 0.8
-TARGET_REPLACE_ITER = 200   # how often do the reality network iterate
+TARGET_REPLACE_ITER = 150   # how often do the reality network iterate
 
 N_ACTIONS = 6  # action space
 ACTIONS = ['UP', 'RIGHT', 'DOWN', 'LEFT', 'WAIT', 'BOMB']
 
 class DQN(object):
-	def __init__(self,in_channels:int,out_channels:int,kernel_size:int,MEMORY_CAPACITY,MIN_ENEMY_STEPS,action_space = 6,stride = 2, ):
+	def __init__(self,in_channels:int,out_channels:int,kernel_size:int,MEMORY_CAPACITY,MIN_ENEMY_STEPS,action_space = 6,stride = 1, ):
 
 		# eval for the evaluation network, target is the reality network
 		self.eval_net = Net(in_channels,out_channels,kernel_size,action_space ,stride )
@@ -46,7 +46,7 @@ class DQN(object):
 
 			if self.memory_counter < self.MEMORY_CAPACITY:
 				# now only enemy steps are recorded, my_agent just hanging around
-				useless_action = [np.random.choice([0, 1, 2, 3, 4, 5], p=[.2, .2, .2, .2, .1, .1])]
+				useless_action = [np.random.choice([0, 1, 2, 3, 4, 5], p=[.2, .2, .2, .2, .15, .05])]
 				return useless_action
 			elif self.memory_counter < self.MEMORY_CAPACITY * 2:
 				EPSILON = EPSILON_L
@@ -97,7 +97,7 @@ class DQN(object):
 
 		# 针对做过的动作b_a, 来选 q_eval 的值, (q_eval 原本有所有动作的值)
 		# choose the behavior according to b_a
-		q_eval = self.eval_net(b_s).gather(1, b_a)  # shape (batch, 1) 找到action的Q估计(关于gather使用下面有介绍)
+		q_eval = self.eval_net(b_s).gather(1, b_a)  # shape (batch, 1) 找到action的Q估计
 		q_next = self.target_net(b_s_).detach()  # q_next 不进行反向传递误差, 所以 detach Q现实
 		q_next_max =  q_next.max(1)[0]
 		q_target = b_r + GAMMA * torch.unsqueeze(q_next_max,1)  # shape (batch, 1) DQL核心公式
@@ -109,25 +109,33 @@ class DQN(object):
 
 
 class Net(nn.Module):
-	def __init__ (self,in_channels:int,out_channels:int,kernel_size:int,action_space = 6,stride = 2,dropout_f = 0.01):
+	def __init__ (self,in_channels:int,out_channels:int,kernel_size:int,action_space = 6,stride = 1,dropout_f = 0.01):
 		super(Net, self).__init__()
 
+
+
 		self.conv = nn.Sequential(
-			nn.Conv2d(in_channels, out_channels, kernel_size, stride, 0),
-			nn.ReLU(),
-			nn.Conv2d(out_channels, out_channels, int(kernel_size / 2), int(stride/2), 0),
-			nn.ReLU(),
+			nn.Conv2d(in_channels, 2 * out_channels, kernel_size, stride, 0),
+			nn.LeakyReLU(),
+
+			nn.Conv2d(2 * out_channels, int(out_channels), int(kernel_size / 2), int(stride ), 0),
+			nn.LeakyReLU(),
+
+			nn.Conv2d(int(out_channels), out_channels, int(kernel_size / 2), int(stride), 0),
+			nn.LeakyReLU(),
+
 		)
 		conv_out_size = self._get_conv_out()
 
+
 		self.fc = nn.Sequential(
 			nn.Linear(conv_out_size, 12),
-			nn.ReLU(),
+			nn.LeakyReLU(),
 			nn.Linear(12, action_space)
 		)
 
 	def _get_conv_out(self):
-		o = self.conv(torch.zeros(1,3,13,13))
+		o = self.conv(torch.zeros(1,4,5,5))
 		return int(np.prod(o.size()))
 
 	def forward(self, x):

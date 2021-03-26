@@ -33,15 +33,15 @@ def setup(self):
     :param self: This object is passed to all callbacks and you can set arbitrary values.
     """
 
-    input_size = 3
-    output_size = 6
-    kernel_size = 4
+    input_size = 4
+    output_size = 8
+    kernel_size = 2
     self.total_rewards = 0
     self.record = pd.DataFrame(columns=["round", "steps", "loss", "total_rewards"])
 
     # training parameters
-    self.MIN_ENEMY_STEPS = 200
-    self.MEMORY_CAPACITY = 200
+    self.MIN_ENEMY_STEPS = 15000
+    self.MEMORY_CAPACITY = 15000
 
     self.modelpath = os.path.join(os.getcwd(),"models",'model.pt')
     self.qnn = DQN(input_size, output_size, kernel_size, self.MEMORY_CAPACITY, self.MIN_ENEMY_STEPS)
@@ -72,7 +72,7 @@ def act(self, game_state: dict) -> str:
     state_input = state_to_features(game_state)
 
     if self.train:
-        self.logger.debug("Traning action")
+        self.logger.debug("Training action")
         choice = self.qnn.choose_action(state_input,True)
     else:
         self.logger.debug("Querying model for action.")
@@ -93,13 +93,12 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
 
     if game_state is None:
         #initial statues
-        self_field = np.zeros((13, 13))
-        game_field = np.zeros((13, 13))
-        explosion_field = np.zeros((13, 13))
+        self_field = np.zeros((5, 5))
+        game_field = np.zeros((5, 5))
+        explosion_field = np.zeros((5, 5))
+        bomb_field = np.zeros((5,5))
+        coin_field = np.zeros((5, 5))
     else:
-
-
-
         #location map
         self_loc = game_state['self'][-1]
 
@@ -112,14 +111,20 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
 
         #game map
         game_field = game_state['field']
+        for other in others:
+            game_field[other] = -1
+
+        #coin map
+        coin_field = - np.ones((17, 17))
         for coin in game_state['coins']:
-            game_field[coin] = 10
-        # for bomb in game_state['bombs']:
-        #     game_field[bomb[0]] = -2
-        #explosion map
+            coin_field[coin] = 1
+
+        # valid bomb
+        bomb_field = np.ones((5,5))
+        if not game_state['self'][2]:
+          bomb_field = - bomb_field
+
         explosion_field = game_state['explosion_map']
-        for bomb in game_state['bombs']:
-            explosion_field[bomb[0]] = -1
 
         # cut out the self-centred area
         #left-right
@@ -127,7 +132,7 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         padding_right = 0
         padding_top = 0
         padding_down = 0
-        scope = 6
+        scope = 2
         if self_loc[1] - scope < 0:
             padding_left = scope - self_loc[1]
             idx_left = 0
@@ -164,18 +169,27 @@ def state_to_features( game_state: dict, is_enemy = False) -> np.array:
         loc_explosion= loc_explosion[idx_top:idx_down, :]
         explosion_field = np.pad(loc_explosion, ((padding_top, padding_down), (padding_left, padding_right)), 'constant', constant_values = 0)
 
-        if game_field.shape[0] == 12 or game_field.shape[1] == 12:
-            print("new")
-            print(game_field.shape)
-            print(self_loc)
-            print(idx_top,idx_down,idx_left,idx_right)
-            print(padding_top,padding_down,padding_left,padding_right)
-            print(self_field)
+        loc_coin= coin_field[:, idx_left:idx_right]
+        loc_coin = loc_coin[idx_top:idx_down, :]
+        coin_field = np.pad(loc_coin, ((padding_top, padding_down), (padding_left, padding_right)),
+                                 'constant', constant_values=-1)
+
+        # if game_field.shape[0] == 12 or game_field.shape[1] == 12:
+        #     print("new")
+        #     print(game_field.shape)
+        #     print(self_loc)
+        #     print(idx_top,idx_down,idx_left,idx_right)
+        #     print(padding_top,padding_down,padding_left,padding_right)
+        #     print(self_field)
     # For example, you could construct several channels of equal shape, ...
     channels = []
-    channels.append(self_field)
+    # channels.append(self_field)
     channels.append(game_field)
     channels.append(explosion_field)
+    channels.append(coin_field)
+    channels.append(bomb_field)
+
+
     # concatenate them as a feature tensor (they must have the same shape), ...
     stacked_channels = np.stack(channels)
 
